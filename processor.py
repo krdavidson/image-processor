@@ -159,7 +159,7 @@ def flipBlackWhite(px_array, image_width, image_height):
 
 def main(input_filename=f'./images/han-chenxu-YdAqiUkUoWA-unsplash.png'):
     # Change the 'image_name' variable to process different images
-    image_name = 'sergey-beschastnykh-pOkImMZ29c0-unsplash'
+    image_name = 'karsten-winegeart-l0Xbubj--wE-unsplash'
     input_filename = f'./images/{image_name}.png'
 
     # Read in the png file, and receive three pixel arrays for red, green and blue components
@@ -176,7 +176,7 @@ def main(input_filename=f'./images/han-chenxu-YdAqiUkUoWA-unsplash.png'):
     output_path = f'./output_images/{image_name}_output.png' 
     pyplot.axis('off')
     pyplot.imshow(px_array, cmap='gray', aspect='equal')
-    pyplot.savefig(output_path, bbox_inches='tight', pad_inches=0)  
+    pyplot.savefig(output_path, dpi=300, bbox_inches='tight', pad_inches=0)  
     pyplot.show()
 
 main()
