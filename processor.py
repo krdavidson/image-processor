@@ -2,7 +2,6 @@ from matplotlib import pyplot
 # Import png reader library
 import imageIO.png 
 
-
 def readRGBImageToSeparatePixelArrays(input_filename):
     image_reader = imageIO.png.Reader(input_filename)
     # png reader returns image width, height, and RGB data in rgb_image_rows (a list of rows of RGB triplets)
@@ -139,35 +138,45 @@ def edgeDetection(px_array, image_width, image_height):
 
     return edge_detection
 
-def flip(px_array, image_width, image_height):
+# Segment main object(s) from background
+def threshold(px_array, image_width, image_height):
     for row in range(image_height):
         for col in range(image_width):
-            px_array[row][col] = 256 - px_array[row][col]
+            if px_array[row][col] < 20:
+                px_array[row][col] = 0
+            else:
+                px_array[row][col] = 255
     return px_array
 
-
+# Output black lines and white background 
+def flipBlackWhite(px_array, image_width, image_height):
+    for row in range(image_height):
+        for col in range(image_width):
+            px_array[row][col] = 255 - px_array[row][col]
+    return px_array
 
 #############################
 
 def main(input_filename=f'./images/han-chenxu-YdAqiUkUoWA-unsplash.png'):
     # Change the 'image_name' variable to process different images
-    image_name = 'han-chenxu-YdAqiUkUoWA-unsplash'
+    image_name = 'sergey-beschastnykh-pOkImMZ29c0-unsplash'
     input_filename = f'./images/{image_name}.png'
 
     # Read in the png file, and receive three pixel arrays for red, green and blue components
     (image_width, image_height, px_array_r, px_array_g, px_array_b) = readRGBImageToSeparatePixelArrays(input_filename)
     
+    # Image processing steps
     px_array = convertRGBtoGreyscale(image_width, image_height, px_array_r, px_array_g, px_array_b)
     px_array = contrastStretch(px_array, image_width, image_height)
     px_array = edgeDetection(px_array, image_width, image_height)
-    px_array = flip(px_array, image_width, image_height)
+    px_array = threshold(px_array, image_width, image_height)
+    px_array = flipBlackWhite(px_array, image_width, image_height)
 
     # Pop-up the processed image, save it to output folder
+    output_path = f'./output_images/{image_name}_output.png' 
     pyplot.axis('off')
-    pyplot.tight_layout()
-    output_path = f'./output_images/{image_name}_output.png'
-    pyplot.savefig(output_path, bbox_inches='tight', pad_inches=0)   
     pyplot.imshow(px_array, cmap='gray', aspect='equal')
+    pyplot.savefig(output_path, bbox_inches='tight', pad_inches=0)  
     pyplot.show()
 
 main()
