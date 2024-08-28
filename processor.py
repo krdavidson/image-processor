@@ -1,4 +1,5 @@
 from matplotlib import pyplot
+import sys
 # Import png reader library
 import imageIO.png 
 
@@ -7,7 +8,7 @@ def readRGBImageToSeparatePixelArrays(input_filename):
     # png reader returns image width, height, and RGB data in rgb_image_rows (a list of rows of RGB triplets)
     (image_width, image_height, rgb_image_rows, rgb_image_info) = image_reader.read()
 
-    print("read image width={}, height={}".format(image_width, image_height))
+    print("Reading image width={}, height={}".format(image_width, image_height))
 
     # The pixel arrays are lists of lists, where each inner list stores one row of image pixels
     # Each pixel is an 8 bit integer value between 0-255 encoding the color values 
@@ -157,15 +158,13 @@ def flipBlackWhite(px_array, image_width, image_height):
 
 #############################
 
-def main(input_filename=f'./images/han-chenxu-YdAqiUkUoWA-unsplash.png'):
-    # Change the 'image_name' variable to process different images
-    image_name = 'karsten-winegeart-l0Xbubj--wE-unsplash'
-    input_filename = f'./images/{image_name}.png'
-
+def main(input_path='./images/han-chenxu-YdAqiUkUoWA-unsplash.png',
+         output_path='./output_images/han-chenxu-YdAqiUkUoWA-unsplash_output.png'):
     # Read in the png file, and receive three pixel arrays for red, green and blue components
-    (image_width, image_height, px_array_r, px_array_g, px_array_b) = readRGBImageToSeparatePixelArrays(input_filename)
+    (image_width, image_height, px_array_r, px_array_g, px_array_b) = readRGBImageToSeparatePixelArrays(input_path)
     
     # Image processing steps
+    print("Processing your image... Thank you for waiting")
     px_array = convertRGBtoGreyscale(image_width, image_height, px_array_r, px_array_g, px_array_b)
     px_array = contrastStretch(px_array, image_width, image_height)
     px_array = edgeDetection(px_array, image_width, image_height)
@@ -173,10 +172,16 @@ def main(input_filename=f'./images/han-chenxu-YdAqiUkUoWA-unsplash.png'):
     px_array = flipBlackWhite(px_array, image_width, image_height)
 
     # Pop-up the processed image, save it to output folder
-    output_path = f'./output_images/{image_name}_output.png' 
     pyplot.axis('off')
     pyplot.imshow(px_array, cmap='gray', aspect='equal')
     pyplot.savefig(output_path, dpi=300, bbox_inches='tight', pad_inches=0)  
     pyplot.show()
 
-main()
+if __name__ == "__main__":
+    num_of_args = len(sys.argv) - 1
+    if num_of_args > 0:
+        input_path = sys.argv[1]
+        output_path = sys.argv[2]
+        main(input_path, output_path)
+    else:
+        main()
