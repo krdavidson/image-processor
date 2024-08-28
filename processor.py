@@ -6,7 +6,6 @@ def rgb_image_to_pixels(input_filename):
     image_reader = imageIO.png.Reader(input_filename)
     # png reader returns image width, height, and RGB data in rgb_image_rows (a list of rows of RGB triplets)
     (image_width, image_height, rgb_image_rows, rgb_image_info) = image_reader.read()
-
     print("Reading image width={}, height={}".format(image_width, image_height))
 
     # The pixel arrays are lists of lists, where each inner list stores one row of image pixels
@@ -37,7 +36,6 @@ def rgb_image_to_pixels(input_filename):
         pixel_array_r.append(pixel_row_r)
         pixel_array_g.append(pixel_row_g)
         pixel_array_b.append(pixel_row_b)
-
     return (image_width, image_height, pixel_array_r, pixel_array_g, pixel_array_b)
 
 # Create a list of lists which represents the pixel matrix of an image, initialized with a pixel value
@@ -78,13 +76,9 @@ def convert_rgb_to_greyscale(image_width, image_height, px_array_r, px_array_g, 
             greyscale_pixel_array[i][j] = gs
     return greyscale_pixel_array
 
-# Stretch the pixel values using the 5-95 percentile mapping strategy to maximise contrast 
-def contrast_stretch(px_array, image_width, image_height):
-    histogram = get_histogram(px_array)
-    cumulative_histogram = get_cumulative_histogram(histogram)
-    
-    # Find qa (smallest value st cumulative_histogram[qa] > 5% of total pixels) 
-    # and qb (largest value st qb < 95% of total pixels)
+# Find qa (smallest value st cumulative_histogram[qa] > 5% of total pixels) 
+# and qb (largest value st qb < 95% of total pixels)
+def get_qa_qb(image_width, image_height, cumulative_histogram):
     total_px = image_width * image_height
     a = total_px * 0.05
     b = total_px * 0.95
@@ -98,6 +92,13 @@ def contrast_stretch(px_array, image_width, image_height):
         if cumulative_histogram[i] < b:
             qb = i
             break
+    return (qa, qb)
+
+# Stretch the pixel values using the 5-95 percentile mapping strategy to maximise contrast 
+def contrast_stretch(px_array, image_width, image_height):
+    histogram = get_histogram(px_array)
+    cumulative_histogram = get_cumulative_histogram(histogram)
+    qa, qb = get_qa_qb(image_width, image_height, cumulative_histogram)
 
     # Linear mapping of px_array to contrast stretch each pixel value in the image
     for i in range(image_height):
@@ -108,7 +109,6 @@ def contrast_stretch(px_array, image_width, image_height):
             elif cs > 255:
                 cs = 255
             px_array[i][j] = cs
-
     return px_array
 
 # Apply a 3x3 Scharr filter in horizontal and vertical directions to detect the edges in the image
@@ -134,7 +134,6 @@ def edge_detection(px_array, image_width, image_height):
                 total_h = total_h/32
                 total_v = total_v/32                
                 edge_detection[row][col] = abs(total_h) + abs(total_v)
-
     return edge_detection
 
 # Segment main object(s) from background
