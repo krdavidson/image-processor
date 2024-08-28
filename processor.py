@@ -1,9 +1,8 @@
-from matplotlib import pyplot
 import sys
-# Import png reader library
+from matplotlib import pyplot
 import imageIO.png 
 
-def readRGBImageToSeparatePixelArrays(input_filename):
+def rgb_image_to_pixels(input_filename):
     image_reader = imageIO.png.Reader(input_filename)
     # png reader returns image width, height, and RGB data in rgb_image_rows (a list of rows of RGB triplets)
     (image_width, image_height, rgb_image_rows, rgb_image_info) = image_reader.read()
@@ -42,7 +41,7 @@ def readRGBImageToSeparatePixelArrays(input_filename):
     return (image_width, image_height, pixel_array_r, pixel_array_g, pixel_array_b)
 
 # Create a list of lists which represents the pixel matrix of an image, initialized with a pixel value
-def createInitializedPixelArray(image_width, image_height, init_value = 0):
+def create_initialized_pixel_array(image_width, image_height, init_value = 0):
     new_pixel_array = []
     for _ in range(image_height):
         new_row = []
@@ -51,14 +50,14 @@ def createInitializedPixelArray(image_width, image_height, init_value = 0):
         new_pixel_array.append(new_row)
     return new_pixel_array
 
-def getHistogram(px_array):
+def get_histogram(px_array):
     histogram = [0] * 256
     for row in px_array:
         for num in row:
             histogram[num] += 1
     return histogram
 
-def getCumulativeHistogram(histogram):
+def get_cumulative_histogram(histogram):
     cumulative_histogram = [0] * 256
     running_total = 0
     index = 0
@@ -68,9 +67,9 @@ def getCumulativeHistogram(histogram):
         index += 1
     return cumulative_histogram
 
-# Convert RGB colour image to greyscale image using ratio 0.3 : 0.6 : 0.1
-def convertRGBtoGreyscale(image_width, image_height, px_array_r, px_array_g, px_array_b):
-    greyscale_pixel_array = createInitializedPixelArray(image_width, image_height)
+# Convert RGB colour image to greyscale image using RGB ratio 0.3 : 0.6 : 0.1
+def convert_rgb_to_greyscale(image_width, image_height, px_array_r, px_array_g, px_array_b):
+    greyscale_pixel_array = create_initialized_pixel_array(image_width, image_height)
     for i in range(image_height):
         for j in range(image_width):
             gs = (px_array_r[i][j] * 0.3) + (px_array_g[i][j] * 0.6) + (px_array_b[i][j] * 0.1)
@@ -80,10 +79,9 @@ def convertRGBtoGreyscale(image_width, image_height, px_array_r, px_array_g, px_
     return greyscale_pixel_array
 
 # Stretch the pixel values using the 5-95 percentile mapping strategy to maximise contrast 
-def contrastStretch(px_array, image_width, image_height):
-    # Compute the histograms
-    histogram = getHistogram(px_array)
-    cumulative_histogram = getCumulativeHistogram(histogram)
+def contrast_stretch(px_array, image_width, image_height):
+    histogram = get_histogram(px_array)
+    cumulative_histogram = get_cumulative_histogram(histogram)
     
     # Find qa (smallest value st cumulative_histogram[qa] > 5% of total pixels) 
     # and qb (largest value st qb < 95% of total pixels)
@@ -114,8 +112,8 @@ def contrastStretch(px_array, image_width, image_height):
     return px_array
 
 # Apply a 3x3 Scharr filter in horizontal and vertical directions to detect the edges in the image
-def edgeDetection(px_array, image_width, image_height):
-    edge_detection = createInitializedPixelArray(image_width, image_height, 0)
+def edge_detection(px_array, image_width, image_height):
+    edge_detection = create_initialized_pixel_array(image_width, image_height, 0)
     scharr_h = [3, 0, -3, 10, 0, -10, 3, 0, -3]
     scharr_v = [3, 10, 3, 0, 0, 0, -3, -10, -3]
 
@@ -150,7 +148,7 @@ def threshold(px_array, image_width, image_height):
     return px_array
 
 # Output black lines and white background 
-def flipBlackWhite(px_array, image_width, image_height):
+def flip_black_and_white(px_array, image_width, image_height):
     for row in range(image_height):
         for col in range(image_width):
             px_array[row][col] = 255 - px_array[row][col]
@@ -161,15 +159,15 @@ def flipBlackWhite(px_array, image_width, image_height):
 def main(input_path='./images/han-chenxu-YdAqiUkUoWA-unsplash.png',
          output_path='./output_images/han-chenxu-YdAqiUkUoWA-unsplash_output.png'):
     # Read in the png file, and receive three pixel arrays for red, green and blue components
-    (image_width, image_height, px_array_r, px_array_g, px_array_b) = readRGBImageToSeparatePixelArrays(input_path)
+    (image_width, image_height, px_array_r, px_array_g, px_array_b) = rgb_image_to_pixels(input_path)
     
     # Image processing steps
     print("Processing your image... Thank you for waiting")
-    px_array = convertRGBtoGreyscale(image_width, image_height, px_array_r, px_array_g, px_array_b)
-    px_array = contrastStretch(px_array, image_width, image_height)
-    px_array = edgeDetection(px_array, image_width, image_height)
+    px_array = convert_rgb_to_greyscale(image_width, image_height, px_array_r, px_array_g, px_array_b)
+    px_array = contrast_stretch(px_array, image_width, image_height)
+    px_array = edge_detection(px_array, image_width, image_height)
     px_array = threshold(px_array, image_width, image_height)
-    px_array = flipBlackWhite(px_array, image_width, image_height)
+    px_array = flip_black_and_white(px_array, image_width, image_height)
 
     # Pop-up the processed image, save it to output folder
     pyplot.axis('off')
