@@ -12,8 +12,13 @@ To run the project locally:
     git clone <repository_url>
     cd path/to/image-processor
     ```
+    
+2. Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-2. Run the program:
+3. Run the program:
 - If you would like to use the default test image:
     ```bash
     python processor.py
