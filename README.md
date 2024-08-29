@@ -2,10 +2,10 @@
  
 Tool to process an image to output a line drawing of the image. 
 
-![alt text](images/example2.png)
+![alt text](images/example2.png) ![alt text](images/example1.png)
 
 ## Getting Started 
-To run the repository locally:
+To run the project locally:
 
 1. Clone the project:
     ```bash
@@ -19,14 +19,13 @@ To run the repository locally:
     python processor.py
     ```
 
-- If you would like to use your own image:
+- If you would like to use your own PNG image:
     ```bash
-    python processor.py {image_input_path} {image_output_path}
+    python processor.py <image_input_path> <image_output_path>
     ```
     Ex: `python processor.py ./images/image_name.png ./output_images/image_name_output.png`
 
-3. View the processed image:
-    The output image will pop-up when processing has completed. A copy of the image will also be saved to the output_images folder.
+The output image will pop-up when processing has completed. A copy of the image will also be saved to the output_images folder.
 
 ## Acknowledgements
 Default and test images sourced from Unsplash:
