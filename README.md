@@ -14,11 +14,11 @@ cd path/to/image-processor
 ```
 
 2. Run the program:
-    If you would like to use the default test image:
+If you would like to use the default test image:
 ```bash
 python processor.py
 ```
-    If you would like to use your own image:
+If you would like to use your own image:
 ```bash
 python processor.py {image_input_path} {image_output_path}
 ```
